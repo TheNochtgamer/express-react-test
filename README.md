@@ -4,6 +4,6 @@
 > Utilice vite para obtener react y express
 
 ### A tomar en cuenta
-> Intalar todos los paquetes, tanto en `/` como tambien dentro de `/public`
+> Instalar todos los paquetes, tanto en `/` como tambien dentro de `/client`
 > 
-> A la hora de depurar, se debe traspilar primero el proyecto dentro de `/public` con ```npm run build```
+> Para depurar usar ```npm run build``` y despues ```npm test``` o ```npm start```, debido a que el client-end de react tiene que transpilarse primero

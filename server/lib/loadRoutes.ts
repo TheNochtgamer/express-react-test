@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import type { Express } from 'express';
+import { type Express } from 'express';
+import type { MyRoute } from '../types';
 
 function loadInsideFolder(folderPath: string): string[] {
   const files = fs.readdirSync(folderPath, {
@@ -17,17 +18,32 @@ export default async function loadRoutes(app: Express): Promise<void> {
   const stats = [0, 0];
 
   const routeFiles = loadInsideFolder(routesPath);
+  const routeImports: MyRoute[] = [];
   stats[0] = routeFiles.length;
 
   for (const routeFile of routeFiles) {
     try {
-      const route = await import(routeFile);
-      app.use(route.router);
+      const route: MyRoute = await import(routeFile);
+
+      if (!route.router)
+        throw new Error('Invalid route file: router is invalid');
+
+      routeImports.push(route);
       stats[1]++;
     } catch (error) {
       console.error(`Failed to load route ${routeFile}:`, error);
     }
   }
 
-  console.log(`Loaded ${stats[1]} out of ${stats[0]} routes.`);
+  routeImports
+    .sort((a, b) => {
+      if (a?.orderAtLast && !b?.orderAtLast) return 1;
+      if (!a?.orderAtLast && b?.orderAtLast) return -1;
+      return 0;
+    })
+    .forEach(route => {
+      app.use(route.router);
+    });
+
+  console.log(`Loaded ${stats[1]}/${stats[0]} routes.`);
 }
