@@ -1,15 +1,14 @@
 import express from 'express';
 import path from 'path';
+import loadRoutes from './lib/loadRoutes';
 
 const app = express();
 
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
+void loadRoutes(app);
 
-app.use(express.static(path.join(__dirname, '../public/dist')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../public/dist/index.html'));
+  res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });
 
 app.listen(3000, () => {
